@@ -1,12 +1,12 @@
 package com.senacor.service;
 
 import com.senacor.model.Event;
+import com.senacor.model.Speech;
 import com.senacor.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import org.springframework.web.client.RestTemplate;
+import java.util.*;
 
 /**
  * Created by saba on 06.11.16.
@@ -17,8 +17,11 @@ public class EventService {
     @Autowired
     EventRepository eventRepository;
 
-    public Event getEvent(UUID uuid) {
-        return eventRepository.findOne(uuid);
+    final String speechUri = "http://localhost:8081/speech/";
+    RestTemplate restTemplate = new RestTemplate();
+
+    public Event getEvent(String id) {
+        return eventRepository.findOne(id);
     }
 
     public Event getCurrentEvent() {
@@ -33,7 +36,7 @@ public class EventService {
     }
 
 
-    public void deleteEvent(UUID id) {
+    public void deleteEvent(String id) {
         eventRepository.delete(id);
     }
 
@@ -45,4 +48,15 @@ public class EventService {
         return eventRepository.findAll();
     }
 
+    public List <Speech> getSpeechesForEvent(String eventId) {
+        return restTemplate.getForObject(speechUri + eventId, List.class);
+    }
+
+    public Speech createSpeech(Speech speech) {
+        return restTemplate.postForObject(speechUri + "newSpeech", speech, Speech.class);
+    }
+
+    public List<Speech> getAllSpeeches() {
+        return restTemplate.getForObject(speechUri + "list", List.class);
+    }
 }

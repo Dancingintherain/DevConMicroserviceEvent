@@ -1,6 +1,7 @@
 package com.senacor.controller;
 
 import com.senacor.model.Event;
+import com.senacor.model.Speech;
 import com.senacor.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
 
 /**
  * Created by saba on 21.10.16.
@@ -23,15 +26,20 @@ public class EventController {
 
 
     @RequestMapping(value="/currentEvent", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Event> getCurrentEvent (){
-        return new ResponseEntity<>(eventService.getCurrentEvent(), HttpStatus.OK);
+    public void getCurrentEventSpeeches (HttpServletResponse response){
+        Event event = eventService.getCurrentEvent();
+        try {
+            response.sendRedirect("http://localhost:8080/event/" + event.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Event> getEvent(@PathVariable("id") UUID id){
-        return new ResponseEntity<>(eventService.getEvent(id), HttpStatus.OK);
+    public Iterable<Speech> getEventSpeeches(@PathVariable("id") String id){
+        return eventService.getSpeechesForEvent(id);
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,9 +60,19 @@ public class EventController {
         return new ResponseEntity<Event>(eventService.createEvent(createdEvent), HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/{id}/newSpeech", method = RequestMethod.POST)
+    public ResponseEntity<Speech> createSpeech(@PathVariable("id") String eventId, @RequestBody Speech speech) {
+        Speech createdSpeech = new Speech(eventId);
+        createdSpeech.setSpeechRoom(speech.getSpeechRoom());
+       // createdSpeech.setDuration(speech.getDuration());
+        createdSpeech.setSpeaker(speech.getSpeaker());
+        createdSpeech.setStartTime(speech.getStartTime());
+        return new ResponseEntity<Speech>(eventService.createSpeech(createdSpeech), HttpStatus.CREATED);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Event> updateEvent(@PathVariable("id") UUID id, @RequestBody Event event) {
+    public ResponseEntity<Event> updateEvent(@PathVariable("id") String id, @RequestBody Event event) {
         Event existingEvent = eventService.getEvent(id);
         existingEvent.setName(event.getName());
         existingEvent.setPlace(event.getPlace());
@@ -63,7 +81,7 @@ public class EventController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE) //headers = "Accept=application/json"
-    public void deleteEvent(@PathVariable("id") UUID id) {
+    public void deleteEvent(@PathVariable("id") String id) {
         eventService.deleteEvent(id);
     }
 

@@ -2,6 +2,7 @@ package com.senacor.model;
 
 import org.joda.time.LocalDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,11 +13,11 @@ import java.util.UUID;
 /**
  * Created by saba on 21.10.16.
  */
-
+@Document
 public class Event implements Comparable<Event> {
 
     @Id
-    private UUID id;
+    private String id;
 
     private String name;
 
@@ -27,7 +28,7 @@ public class Event implements Comparable<Event> {
 
 
     public Event() {
-        id = UUID.randomUUID();
+
     }
 
     //Date myDate = new Date();
@@ -35,9 +36,9 @@ public class Event implements Comparable<Event> {
     public Event(String name) {
         this.name = name;
     }
-    
 
-    public void setId(UUID id) {
+
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -58,7 +59,7 @@ public class Event implements Comparable<Event> {
         return name;
     }
 
-    public UUID getId() {
+    public String getId() {
 
         return id;
     }

@@ -15,5 +15,5 @@ import java.util.UUID;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "event", path = "event")
-public interface EventRepository extends MongoRepository<Event, UUID> {
+public interface EventRepository extends MongoRepository<Event, String> {
 }
