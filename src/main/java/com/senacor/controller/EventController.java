@@ -1,13 +1,14 @@
 package com.senacor.controller;
 
 import com.senacor.model.Event;
-import com.senacor.model.Speech;
-import com.senacor.repository.EventRepository;
-import com.senacor.repository.SpeechRepository;
+import com.senacor.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 /**
  * Created by saba on 21.10.16.
@@ -16,45 +17,54 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/event")
 public class EventController {
-    @Autowired
-    private EventRepository eventRepository;
 
     @Autowired
-    private SpeechRepository speechRepository;
+    private EventService eventService;
 
-    
-    @RequestMapping(value = "", method = RequestMethod.GET)
+
+    @RequestMapping(value="/currentEvent", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Event> getCurrentEvent (){
+        return new ResponseEntity<>(eventService.getCurrentEvent(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Event> getEvent(@PathVariable("id") UUID id){
+        return new ResponseEntity<>(eventService.getEvent(id), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Iterable<Event> listAllEvents() {
-        return eventRepository.findAll();
+        return eventService.listAllEvents();
     }
 
-    @RequestMapping(value = "/{eventID}", method = RequestMethod.GET)
-        public Iterable<Speech> getEventSpeeches(@PathVariable("eventID") String eventID){
-        return speechRepository.findByEventID(eventID);
-    }
 
     //Create Event Object with parameters with http-POST Request
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void createEvent(@RequestBody Event event) {
+    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+
         Event createdEvent = new Event();
         createdEvent.setName(event.getName());
         createdEvent.setPlace(event.getPlace());
-        //createdEvent.setDate();
-        eventRepository.save(createdEvent);
+        createdEvent.setDate(event.getDate());
+        return new ResponseEntity<Event>(eventService.createEvent(createdEvent), HttpStatus.CREATED);
     }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateEvent(@PathVariable("id") String id, @RequestBody Event event) {
-        Event existingEvent = eventRepository.findOne(id);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Event> updateEvent(@PathVariable("id") UUID id, @RequestBody Event event) {
+        Event existingEvent = eventService.getEvent(id);
         existingEvent.setName(event.getName());
         existingEvent.setPlace(event.getPlace());
-       // existingEvent.setDate(event.getDate());
-        eventRepository.save(existingEvent);
+        existingEvent.setDate(event.getDate());
+        return new ResponseEntity<Event>(eventService.createEvent(existingEvent), HttpStatus.CREATED);
     }
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE) //headers = "Accept=application/json"
-    public void deleteEvent(@PathVariable("id") String id) {
-        eventRepository.delete(id);
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE) //headers = "Accept=application/json"
+    public void deleteEvent(@PathVariable("id") UUID id) {
+        eventService.deleteEvent(id);
     }
 
 }

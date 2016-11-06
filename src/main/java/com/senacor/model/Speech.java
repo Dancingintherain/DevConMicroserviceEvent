@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 
-public class Speech {
+public class Speech implements Comparable<Speech>{
 
     @Id
     private String id;
@@ -17,16 +17,12 @@ public class Speech {
     private String speaker;
     private String speakerInfo;
     private String speechSummary;
-    private String eventID;
 
 
     /*
     Objekte werden dann von Werten wie folgt gebildet:LocalDate.of(2012, Month.DECEMBER, 12); // from values
      */
 
-    public Speech(String eventID) {
-        this.eventID = eventID;
-    }
 
     public String getId() {
         return id;
@@ -92,14 +88,9 @@ public class Speech {
         this.speechSummary = speechSummary;
     }
 
-    public String getEventID() {
-        return eventID;
+
+    @Override
+    public int compareTo(Speech o) {
+        return getStartTime().compareTo(o.getStartTime());
     }
-
-    public void setEventID(String eventID) {
-        this.eventID = eventID;
-    }
-
-
-
 }

@@ -51,18 +51,18 @@ public class EventControllerTest2 {
     }
 
    // @Test(expected = InvalidEventNameException.class)
-    public void createEventWithEmptyName() throws Exception {
+/*    public void createEventWithEmptyName() throws Exception {
         Event event = new Event();
         createEventService.createEvent(event);
 
-    }
+    }*/
 
     //@Test(expected = EventNameAlreadyExistsException.class)
-    public void createClientWithExistingName() throws Exception {
+/*    public void createClientWithExistingName() throws Exception {
     //    doThrow(new EventNameAlreadyExistsException()).when(eventRepositoryMock).findByName(eq("Con1"));
         Event event = new Event("Con1");
         createEventService.createEvent(event);
-    }
+    }*/
 
 
     @Test

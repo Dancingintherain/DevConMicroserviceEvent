@@ -4,15 +4,19 @@ import org.joda.time.LocalDate;
 import org.springframework.data.annotation.Id;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by saba on 21.10.16.
  */
-public class Event {
+
+public class Event implements Comparable<Event> {
 
     @Id
-    private String id;
+    private UUID id;
 
     private String name;
 
@@ -22,16 +26,18 @@ public class Event {
 
 
 
-    public Event(){
-        
+    public Event() {
+        id = UUID.randomUUID();
     }
 
     //Date myDate = new Date();
 
-    public Event(String name){
-        this.name=name;
+    public Event(String name) {
+        this.name = name;
     }
-    public void setId(String id) {
+    
+
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -52,7 +58,7 @@ public class Event {
         return name;
     }
 
-    public String getId() {
+    public UUID getId() {
 
         return id;
     }
@@ -63,5 +69,11 @@ public class Event {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+
+    @Override
+    public int compareTo(Event o) {
+        return getDate().compareTo(o.getDate());
     }
 }
